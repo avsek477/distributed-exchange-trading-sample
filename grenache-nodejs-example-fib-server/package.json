@@ -1,0 +1,21 @@
+{
+  "name": "grenache-nodejs-example-fib-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "start:debug": "DEBUG=* node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "async-mutex": "^0.2.4",
+    "bluebird": "^3.7.2",
+    "debug": "^4.2.0",
+    "grenache-nodejs-link": "^0.7.12",
+    "grenache-nodejs-ws": "^0.7.9",
+    "uws": "^10.148.1"
+  }
+}
