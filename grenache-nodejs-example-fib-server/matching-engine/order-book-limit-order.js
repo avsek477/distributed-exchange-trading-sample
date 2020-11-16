@@ -4,13 +4,14 @@ const {
     removeBuyOrder,
     removeSellOrder 
 } = require('./order-book');
+const BigNumber = require('bignumber.js');
+// const BN9 = BigNumber.clone({ DECIMAL_PLACES: 9 });
 const debug = require('debug')('limitOrderBook');
 const { orderBook: { buy, sell } } = require('./variables');
 const Promise = require('bluebird');
 
 const process = (currentOrder) => {
     debug("RECEIVED ORDER", currentOrder);
-    
     if(currentOrder.side === 'bid') {
         return processLimitBuy(currentOrder);
     } else if (currentOrder.side === 'ask') {
@@ -18,10 +19,11 @@ const process = (currentOrder) => {
     } else {
         return [];
     }
-    return tradeDetails;
+    // return tradeDetails;
 }
 
 const processLimitBuy = (order) => {
+    // BigNumber.set({DECIMAL_PLACES: 5});  //get required decimal places from config based on order type separator eg:USDBTC, BTCETH
     return new Promise(async (resolve, reject) => {
         await clientLock.acquire();
         const trades = [];
@@ -39,7 +41,7 @@ const processLimitBuy = (order) => {
                         amount: order.amount,
                         price: currentSellOrder.price
                     });
-                    currentSellOrder.amount -= order.amount;
+                    currentSellOrder.amount = +new BigNumber(currentSellOrder.amount).minus(new BigNumber(order.amount)).toString();
                     if (currentSellOrder.amount === 0) {
                         removeSellOrder(i);
                     }
@@ -53,7 +55,7 @@ const processLimitBuy = (order) => {
                         amount: currentSellOrder.amount,
                         price: currentSellOrder.price
                     });
-                    order.amount -= currentSellOrder.amount;
+                    order.amount = +new BigNumber(order.amount).minus(new BigNumber(currentSellOrder.amount)).toString();
                     removeSellOrder(i);
                     continue;
                 }
@@ -66,6 +68,7 @@ const processLimitBuy = (order) => {
 }
 
 const processLimitSell = (order) => {
+    // BigNumber.set({DECIMAL_PLACES: 5});  //get required decimal places from config based on order type separator eg:BTCUSD, ETHBTC
     return new Promise(async(resolve, reject) => {
         await clientLock.acquire();
         const trades = [];
@@ -83,7 +86,7 @@ const processLimitSell = (order) => {
                         amount: order.amount,
                         price: currentBuyOrder.price
                     });
-                    currentBuyOrder.amount -= order.amount;
+                    currentBuyOrder.amount = +new BigNumber(currentBuyOrder.amount).minus(new BigNumber(0.15268)).toString();
                     if(currentBuyOrder.amount === 0) {
                         removeBuyOrder(i);
                     }
@@ -97,7 +100,7 @@ const processLimitSell = (order) => {
                         amount: currentBuyOrder.amount,
                         price: currentBuyOrder.price
                     });
-                    order.amount -= currentBuyOrder.amount;
+                    order.amount = +new BigNumber(order.amount).minus(new BigNumber(currentBuyOrder.amount)).toString();
                     removeBuyOrder(i);
                     continue;
                 }

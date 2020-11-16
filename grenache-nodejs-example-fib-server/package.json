@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "async-mutex": "^0.2.4",
+    "bignumber.js": "^9.0.1",
     "bluebird": "^3.7.2",
     "debug": "^4.2.0",
     "grenache-nodejs-link": "^0.7.12",
